@@ -1,4 +1,4 @@
-package cryptoproj;
+import java.util.Scanner;
 
 /**
  * The main class to implement the DES encryption algorithm
@@ -109,8 +109,36 @@ public class DES {
 	44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32 };
 
     public static void main (String[] args){
+        //choice of encryption or decryption
+        int choice = 0;
+        //scanner to take input values
+        Scanner input = new Scanner(System.in);
         
+        //ask user to input text to encrpt or decrypt
+        //Main Menu
+        System.out.println("Welcome to DES encyption/decryption program");
+        System.out.println("1. Encrypt");
+        System.out.println("2. Decrypt");
+        System.out.println("Enter your choice: ");
+        String inputText = "", outputText = "";
+        inputText = input.nextLine();
+        switch(choice){
+            case 1: encrypt(inputText);
+                break;
+            case 2: decrypt(inputText);
+                break;
+            default: System.out.println("Invalid Choice!!");
+        }
+        System.out.println(outputText);
+        
+    }
+
+    private static void encrypt(String inputText) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private static void decrypt(String inputText) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
 }
-
