@@ -1,4 +1,10 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Scanner;
+import javax.swing.*;
 
 /**
  * The main class to implement the DES encryption algorithm
@@ -122,6 +128,7 @@ public class DES {
         System.out.println("Enter your choice: ");
         String inputText = "", outputText = "";
         inputText = input.nextLine();
+        createAndShowGUI();
         switch(choice){
             case 1: encrypt(inputText);
                 break;
@@ -139,6 +146,35 @@ public class DES {
 
     private static void decrypt(String inputText) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+    private static void createAndShowGUI() {
+        Frame frm=new Frame("DES Encryption");
+        TextArea tOutput = new TextArea();
+        frm.add(tOutput);
+        frm.setSize(350,200);
+        frm.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){
+                System.exit(0);
+            }
+        });
+        Panel p = new Panel();
+        Panel p1 = new Panel();
+        Label lInput = new Label("Input (hex)");
+        TextField tInput = new TextField(20);
+        Label lKey =new Label("Key (hex)");
+        TextField tKey=new TextField(20);
+        p.setLayout(new GridLayout(3,1));
+        p.add(lInput);
+        p.add(tInput);
+        p.add(lKey);
+        p.add(tKey);
+        Button Encrypt=new Button("Encrypt");
+        p.add(Encrypt);
+        Button Decrypt=new Button("Decrypt");
+        p.add(Decrypt);
+        p1.add(p);
+        frm.add(p1,BorderLayout.NORTH);
+        frm.setVisible(true);
     }
     
 }
