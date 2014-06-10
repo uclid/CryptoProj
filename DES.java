@@ -125,7 +125,8 @@ public class DES {
 
     private static void initGUI() {
         //initializing the GUI interface
-        desGUI inputForm = new desGUI();
+        final desGUI inputForm = new desGUI();
+        //show the form
         inputForm.frm.setVisible(true);
 
         //implementing the Encrypt Button Click
@@ -133,7 +134,7 @@ public class DES {
         {
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Do Something Clicked");
+                inputForm.tOutput.append("Do Something Clicked\n");
             }
         });
 
@@ -142,7 +143,7 @@ public class DES {
         {
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Do Something Clicked");
+                inputForm.tOutput.append("Do Something Clicked\n");
             }
         });
     }
