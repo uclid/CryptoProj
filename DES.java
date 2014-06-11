@@ -1,19 +1,14 @@
 /**
- * Created by dixit bhatta on 6/10/14.
- * This is the main class for DES encryption algorithm.
- * All operations of the algorithm are performed in this
- * class.
- */
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-/**
  * The main class to implement the DES encryption algorithm
  * showing every step and round in encrypting and decrypting
  * the data. The size of the key here is 64-bit and it works
  * on 64-bit data generating separate keys for 16 rounds.
  * @author dixit bhatta
  */
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class DES {
     // initial permutation (split into left/right halves )
     // since DES numbers bits starting at 1, we will ignore x[0]
@@ -115,7 +110,10 @@ public class DES {
             41, 52, 31, 37, 47, 55, 30, 40, 51, 45, 33, 48,
             44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32 };
 
-    public static String input, key;
+    public static String input, key, permKey, IPerm; //input, the key, permuted key and permuted data
+    public static String c,d; //c and d key blocks
+    public static String l,r; //l and r data blocks
+    public static String[] roundkeys = new String[17]; //roungkeys
 
     public static void main (String[] args){
 
@@ -130,11 +128,11 @@ public class DES {
         inputForm.frm.setVisible(true);
 
         //implementing the Encrypt Button Click
-        inputForm.Encrypt.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                inputForm.tOutput.append("Do Something Clicked\n");
+        inputForm.Encrypt.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                takeInput(inputForm); //take the input value and key
+                if(key!=null)
+                    encrypt(inputForm);
             }
         });
 
@@ -143,17 +141,176 @@ public class DES {
         {
             public void actionPerformed(ActionEvent e)
             {
-                inputForm.tOutput.append("Do Something Clicked\n");
+                takeInput(inputForm); //take the input value and key
+                if(key!=null)
+                    decrypt(inputForm);
             }
         });
     }
 
-    private static void encrypt(String inputText) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private static void takeInput(desGUI inputForm) {
+        boolean isInputHex = inputForm.tInput.getText().matches("[0-9A-F]+"); //checks if the input is hexadecimal or not
+        boolean isKeyHex = inputForm.tKey.getText().matches("[0-9A-F]+"); //checks if the input is hexadecimal or not
+        //use strictly 16 digit hex input and hex key
+        if(inputForm.tInput.getText().length() != 16 || inputForm.tKey.getText().length() != 16){
+            JOptionPane.showMessageDialog(null, "Input and Key must be exactly 16 digits", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        //use hexadecimal input and key only
+        else if(!isInputHex || !isKeyHex){
+            JOptionPane.showMessageDialog(null, "Use hex values only (Capital letters)", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+        //use valid input
+        else{
+            input = inputForm.tInput.getText();
+            key = inputForm.tKey.getText();
+            input = toBinary(input); //change the input into binary form
+            key = toBinary(key); //change the input into binary form
+        }
     }
 
-    private static void decrypt(String inputText) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    //for changing hex values to binary
+    private static String toBinary(String value) {
+        char[] valChars = value.toCharArray();
+        value = ""; //reset
+        //binary values for each hex character
+        for(int i =0; i< valChars.length; i++){
+            if(valChars[i] == '0'){
+                value = value + "0000";
+            }
+            else if(valChars[i] == '1'){
+                value = value + "0001";
+            }
+            else if(valChars[i] == '2'){
+                value = value + "0010";
+            }
+            else if(valChars[i] == '3'){
+                value = value + "0011";
+            }
+            else if(valChars[i] == '4'){
+                value = value + "0100";
+            }
+            else if(valChars[i] == '5'){
+                value = value + "0101";
+            }
+            else if(valChars[i] == '6'){
+                value = value + "0110";
+            }
+            else if(valChars[i] == '7'){
+                value = value + "0111";
+            }
+            else if(valChars[i] == '8'){
+                value = value + "1000";
+            }
+            else if(valChars[i] == '9'){
+                value = value + "1001";
+            }
+            else if(valChars[i] == 'A'){
+                value = value + "1010";
+            }
+            else if(valChars[i] == 'B'){
+                value = value + "1011";
+            }
+            else if(valChars[i] == 'C'){
+                value = value + "1100";
+            }
+            else if(valChars[i] == 'D'){
+                value = value + "1101";
+            }
+            else if(valChars[i] == 'E'){
+                value = value + "1110";
+            }
+            else{
+                value = value + "1111";
+            }
+
+        }
+        return value;
+    }
+
+    private static void setKeys(desGUI inputForm) {
+        int i;
+
+        permKey = "";
+        permKey = permute(key, PC_1_perm);
+        c = permKey.substring(0,28);
+        d = permKey.substring(28);
+        inputForm.tOutput.append("K+:  " + permKey + "\n");
+        inputForm.tOutput.append("\nC0:  " + c + "\n");
+        inputForm.tOutput.append("D0:  " + d + "\n");
+
+        //key generation rounds
+        for(i = 1; i <= 16; i++){
+            if(i ==1 || i==2 || i==9 || i==16){ //double shift except these rounds
+                c = c.substring(1)+ c.substring(0,1);
+                d = d.substring(1)+ d.substring(0,1);
+            }
+            else{
+                c = c.substring(2)+ c.substring(0,2);
+                d = d.substring(2)+ d.substring(0,2);
+            }
+            inputForm.tOutput.append("C"+ i + ":  " + c + "\n");
+            inputForm.tOutput.append("D"+ i + ":  " + d + "\n");
+            roundkeys[i] = permute(c+d,PC_2_perm);
+            inputForm.tOutput.append("K"+ i + ":  " + roundkeys[i] + "\n");
+        }
+
+    }
+
+    //work on encrypting the data
+    private static void setData(desGUI inputForm) {
+        int i;
+        String templ,tempr;
+        IPerm = "";
+        IPerm = permute(input, IP_perm);
+        l = IPerm.substring(0,32);
+        r = IPerm.substring(32);
+        inputForm.tOutput.append("\nL0:  " + l + "\n");
+        inputForm.tOutput.append("R0:  " + r + "\n");
+
+        //encryption rounds
+        /*
+        for(i = 1; i <= 16; i++){
+            templ = l;
+            tempr = r;
+            r = templ;
+            inputForm.tOutput.append("L"+ i + ":  " + l + "\n");
+            inputForm.tOutput.append("R"+ i + ":  " + r + "\n");
+        }
+        */
+
+    }
+
+    //performs permutation
+    private static String permute(String source, int[] perm) {
+        int i, fromloc;
+        String dest = "";
+
+        for( i=1; i < perm.length; i++ )
+        {
+            fromloc = perm[i];
+            dest = dest + source.charAt(fromloc-1);
+        }
+        return dest;
+    }
+
+    private static void encrypt(desGUI inputForm) {
+        inputForm.tOutput.setText("");
+        inputForm.tOutput.append("Encrypting\n");
+        inputForm.tOutput.append("Input: " + input+ "\n");
+        inputForm.tOutput.append("Key:   " + key+ "\n");
+        setKeys(inputForm);
+        setData(inputForm);
+
+    }
+
+
+
+
+    private static void decrypt(desGUI inputForm) {
+        inputForm.tOutput.setText("");
+        inputForm.tOutput.append("Decrypting\n");
+        inputForm.tOutput.append("Input: " + input+ "\n");
+        inputForm.tOutput.append("Key:   " + key+ "\n");
     }
 
 }
