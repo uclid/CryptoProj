@@ -13,6 +13,8 @@ public class desGUI {
     Panel p1;
     Label lInput;
     TextField tInput;
+    Label lOutput;
+    TextField tOput;
     Label lKey;
     TextField tKey;
     Button Encrypt;
@@ -22,7 +24,7 @@ public class desGUI {
         frm=new Frame("DES Encryption");
         tOutput = new TextArea();
         frm.add(tOutput);
-        frm.setSize(350,200);
+        frm.setSize(700,400);
         frm.addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e){
                 System.exit(0);
@@ -34,11 +36,15 @@ public class desGUI {
         tInput = new TextField(20);
         lKey =new Label("Key (hex)");
         tKey=new TextField(20);
-        p.setLayout(new GridLayout(3,1));
+        lOutput = new Label("Output (hex)");
+        tOput = new TextField(20);
+        p.setLayout(new GridLayout(4,1));
         p.add(lInput);
         p.add(tInput);
         p.add(lKey);
         p.add(tKey);
+        p.add(lOutput);
+        p.add(tOput);
         Encrypt=new Button("Encrypt");
         p.add(Encrypt);
         Decrypt=new Button("Decrypt");
