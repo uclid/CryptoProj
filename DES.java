@@ -1,10 +1,10 @@
 /**
-* The main class to implement the DES encryption algorithm
-* showing every step and round in encrypting and decrypting
-* the data. The size of the key here is 64-bit and it works
-* on 64-bit data generating separate keys for 16 rounds.
-* @author dixit bhatta
-*/
+ * The main class to implement the DES encryption algorithm
+ * showing every step and round in encrypting and decrypting
+ * the data. The size of the key here is 64-bit and it works
+ * on 64-bit data generating separate keys for 16 rounds.
+ * @author dixit bhatta
+ */
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -269,7 +269,7 @@ public class DES {
         inputForm.tOutput.append("R0: " + r + "\n");
 
         //encryption rounds
-       for(i = 1; i <= 16; i++){
+        for(i = 1; i <= 16; i++){
             templ = l; //templ is ln-1
             tempr = r; //tempr is rn-1
             l = tempr;
@@ -288,12 +288,58 @@ public class DES {
             r = permute(r,P_perm );
             inputForm.tOutput.append("P-box: " + r + "\n");
             //xor left block with the right block
-            r = xor32(r, l);
+            r = xor(r, templ);
             inputForm.tOutput.append("(L"+ (i-1) +"-XOR-R"+ (i-1) + "): " + r + "\n");
             //end of the function
             inputForm.tOutput.append("L"+ i + ": " + l + "\n");
             inputForm.tOutput.append("R"+ i + ": " + r + "\n\n");
-       }
+        }
+        inputForm.tOutput.append("Reverse: " + r+l + "\n\n");
+        output = permute(r+l, FP_perm);
+        inputForm.tOutput.append("Final Permutation: "+ output + "\n\n");
+        String hex = Long.toHexString(Long.parseLong(output.substring(0,32),2))+Long.toHexString(Long.parseLong(output.substring(32),2));
+        inputForm.tOutput.append("Output(hex): "+ hex.toUpperCase() + "\n\n");
+        inputForm.tOput.setText(hex.toUpperCase());
+
+    }
+
+    //work on decrypting the data
+    private static void setDecData(desGUI inputForm) {
+        int i=1;
+        String templ,tempr;
+        IPerm = "";
+        IPerm = permute(input, IP_perm);
+        l = IPerm.substring(0, 32);
+        r = IPerm.substring(32);
+        inputForm.tOutput.append("\nL0: " + l + "\n");
+        inputForm.tOutput.append("R0: " + r + "\n");
+
+        //encryption rounds
+        for(i = 16; i >= 1; i--){
+            templ = l; //templ is ln-1
+            tempr = r; //tempr is rn-1
+            l = tempr;
+
+            //functions start for encryption of right block
+            //first expand r
+            r = expand(r, E_perm);
+            inputForm.tOutput.append("E(R"+ i + "): " + r + "\n");
+            //perform xor operation with round key
+            r = xor(r, roundkeys[i]);
+            inputForm.tOutput.append("K"+ i +"-XOR-E(R"+ i + "): " + r + "\n");
+            //apply substitution boxes
+            r = substitute(r);
+            inputForm.tOutput.append("S-boxes: " + r + "\n");
+            //apply round permutation box
+            r = permute(r,P_perm );
+            inputForm.tOutput.append("P-box: " + r + "\n");
+            //xor left block with the right block
+            r = xor(r, templ);
+            inputForm.tOutput.append("(L"+ (i-1) +"-XOR-R"+ (i-1) + "): " + r + "\n");
+            //end of the function
+            inputForm.tOutput.append("L"+ i + ": " + l + "\n");
+            inputForm.tOutput.append("R"+ i + ": " + r + "\n\n");
+        }
         inputForm.tOutput.append("Reverse: " + r+l + "\n\n");
         output = permute(r+l, FP_perm);
         inputForm.tOutput.append("Final Permutation: "+ output + "\n\n");
@@ -357,37 +403,25 @@ public class DES {
     //for making binary digits of s-box output of exactly 4 bits
     private static String pad(String a) {
         while(a.length()!= 4){
-                a = "0" + a;
+            a = "0" + a;
         };
         return a;
     }
 
     //for xor-ing two data
     private static String xor(String a, String b) {
-        BigInteger b1,b2;
-        b1 = new BigInteger(a, 2);
-        b2 = new BigInteger(b, 2);
-        b2 = b2.xor(b1);
-        a = b2.toString(2);
-        //adjust the binary string to correct 48 bit length
-        while(a.length()!= 48){
-            a = "0" + a;
-        };
-        return a;
-    }
-
-    //for xor-ing end values
-    private static String xor32(String a, String b) {
-        BigInteger b1,b2;
-        b1 = new BigInteger(a, 2);
-        b2 = new BigInteger(b, 2);
-        b2 = b2.xor(b1);
-        a = b2.toString(2);
-        //adjust the binary string to correct 32 bit length
-        while(a.length()!= 32){
-            a = "0" + a;
-        };
-        return a;
+        char[] achars = a.toCharArray();
+        char[] bchars = b.toCharArray();
+        b = "";
+        for(int i = 0; i< a.length(); i++){
+            if(achars[i] == bchars[i]){
+                b = b + '0';
+            }
+            else{
+                b = b + '1';
+            }
+        }
+        return b;
     }
 
     //expansion
@@ -435,6 +469,7 @@ public class DES {
         inputForm.tOutput.append("Input: " + input+ "\n");
         inputForm.tOutput.append("Key: " + key+ "\n");
         setKeys(inputForm);
+        setDecData(inputForm);
     }
 
 }
