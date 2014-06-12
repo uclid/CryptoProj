@@ -1,10 +1,10 @@
 /**
- * The main class to implement the DES encryption algorithm
- * showing every step and round in encrypting and decrypting
- * the data. The size of the key here is 64-bit and it works
- * on 64-bit data generating separate keys for 16 rounds.
- * @author dixit bhatta
- */
+* The main class to implement the DES encryption algorithm
+* showing every step and round in encrypting and decrypting
+* the data. The size of the key here is 64-bit and it works
+* on 64-bit data generating separate keys for 16 rounds.
+* @author dixit bhatta
+*/
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -111,7 +111,9 @@ public class DES {
             41, 52, 31, 37, 47, 55, 30, 40, 51, 45, 33, 48,
             44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32 };
 
-    public static String input, output, key, permKey, IPerm; //input, output, the key, permuted key and permuted input
+    public static String input, output, key, permKey, IPerm; //input, output, the key, permuted key and 
+
+permuted input
     public static String c,d; //c and d key blocks
     public static String l,r; //l and r data blocks
     public static String[] roundkeys = new String[17]; //roungkeys
@@ -150,15 +152,23 @@ public class DES {
     }
 
     private static void takeInput(desGUI inputForm) {
-        boolean isInputHex = inputForm.tInput.getText().matches("[0-9A-F]+"); //checks if the input is hexadecimal or not
-        boolean isKeyHex = inputForm.tKey.getText().matches("[0-9A-F]+"); //checks if the input is hexadecimal or not
+        boolean isInputHex = inputForm.tInput.getText().matches("[0-9A-F]+"); //checks if the input is 
+
+hexadecimal or not
+        boolean isKeyHex = inputForm.tKey.getText().matches("[0-9A-F]+"); //checks if the input is 
+
+hexadecimal or not
         //use strictly 16 digit hex input and hex key
         if(inputForm.tInput.getText().length() != 16 || inputForm.tKey.getText().length() != 16){
-            JOptionPane.showMessageDialog(null, "Input and Key must be exactly 16 digits", "Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Input and Key must be exactly 16 digits", "Error", 
+
+JOptionPane.WARNING_MESSAGE);
         }
         //use hexadecimal input and key only
         else if(!isInputHex || !isKeyHex){
-            JOptionPane.showMessageDialog(null, "Use hex values only (Capital letters)", "Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Use hex values only (Capital letters)", "Error", 
+
+JOptionPane.WARNING_MESSAGE);
         }
         //use valid input
         else{
@@ -235,9 +245,9 @@ public class DES {
         permKey = permute(key, PC_1_perm);
         c = permKey.substring(0,28);
         d = permKey.substring(28);
-        inputForm.tOutput.append("K+:  " + permKey + "\n");
-        inputForm.tOutput.append("\nC0:  " + c + "\n");
-        inputForm.tOutput.append("D0:  " + d + "\n");
+        inputForm.tOutput.append("K+: " + permKey + "\n");
+        inputForm.tOutput.append("\nC0: " + c + "\n");
+        inputForm.tOutput.append("D0: " + d + "\n");
 
         //key generation rounds
         for(i = 1; i <= 16; i++){
@@ -249,10 +259,10 @@ public class DES {
                 c = c.substring(2)+ c.substring(0,2);
                 d = d.substring(2)+ d.substring(0,2);
             }
-            inputForm.tOutput.append("C"+ i + ":  " + c + "\n");
-            inputForm.tOutput.append("D"+ i + ":  " + d + "\n");
+            inputForm.tOutput.append("C"+ i + ": " + c + "\n");
+            inputForm.tOutput.append("D"+ i + ": " + d + "\n");
             roundkeys[i] = permute(c+d,PC_2_perm);
-            inputForm.tOutput.append("K"+ i + ":  " + roundkeys[i] + "\n");
+            inputForm.tOutput.append("K"+ i + ": " + roundkeys[i] + "\n");
         }
 
     }
@@ -265,8 +275,8 @@ public class DES {
         IPerm = permute(input, IP_perm);
         l = IPerm.substring(0, 32);
         r = IPerm.substring(32);
-        inputForm.tOutput.append("\nL0:  " + l + "\n");
-        inputForm.tOutput.append("R0:  " + r + "\n");
+        inputForm.tOutput.append("\nL0: " + l + "\n");
+        inputForm.tOutput.append("R0: " + r + "\n");
 
         //encryption rounds
        for(i = 1; i <= 16; i++){
@@ -277,29 +287,33 @@ public class DES {
             //functions start for encryption of right block
             //first expand r
             r = expand(r, E_perm);
-            inputForm.tOutput.append("E(R"+ i + "):  " + r + "\n");
+            inputForm.tOutput.append("E(R"+ i + "): " + r + "\n");
             //perform xor operation with round key
             r = xor(r, roundkeys[i]);
-            inputForm.tOutput.append("K"+ i +"-XOR-E(R"+ i + "):  " + r + "\n");
+            inputForm.tOutput.append("K"+ i +"-XOR-E(R"+ i + "): " + r + "\n");
             //apply substitution boxes
             r = substitute(r);
-            inputForm.tOutput.append("S-boxes:  " + r + "\n");
+            inputForm.tOutput.append("S-boxes: " + r + "\n");
             //apply round permutation box
             r = permute(r,P_perm );
-            inputForm.tOutput.append("P-box:  " + r + "\n");
+            inputForm.tOutput.append("P-box: " + r + "\n");
             //xor left block with the right block
             r = xor32(r, l);
-            inputForm.tOutput.append("(L"+ (i-1) +"-XOR-R"+ (i-1) + "):  " + r + "\n");
+            inputForm.tOutput.append("(L"+ (i-1) +"-XOR-R"+ (i-1) + "): " + r + "\n");
             //end of the function
-            inputForm.tOutput.append("L"+ i + ":  " + l + "\n");
-            inputForm.tOutput.append("R"+ i + ":  " + r + "\n\n");
+            inputForm.tOutput.append("L"+ i + ": " + l + "\n");
+            inputForm.tOutput.append("R"+ i + ": " + r + "\n\n");
        }
         inputForm.tOutput.append("Reverse: " + r+l + "\n\n");
         output = permute(r+l, FP_perm);
         inputForm.tOutput.append("Final Permutation: "+ output + "\n\n");
-        String hex = Long.toHexString(Long.parseLong(output.substring(0,32),2))+Long.toHexString(Long.parseLong(output.substring(32),2));
-        inputForm.tOutput.append("Output(hex): "+ hex + "\n\n");
-        inputForm.tOput.setText(hex);
+        String hex = 
+
+Long.toHexString(Long.parseLong(output.substring(0,32),2))+Long.toHexString(Long.parseLong(o
+
+utput.substring(32),2));
+        inputForm.tOutput.append("Output(hex): "+ hex.toUpperCase() + "\n\n");
+        inputForm.tOput.setText(hex.toUpperCase());
 
     }
 
@@ -307,14 +321,30 @@ public class DES {
         String a="";
         int b1,b2,b3,b4,b5,b6,b7,b8;
         int b11,b21,b31,b41,b51,b61,b71,b81;
-        b1 = Integer.parseInt(r.substring(1,5),2);   b11 = Integer.parseInt((r.substring(0,1)+r.substring(5,6)),2);
-        b2 = Integer.parseInt(r.substring(7,11),2);  b21 = Integer.parseInt((r.substring(6,7)+r.substring(11,12)),2);
-        b3 = Integer.parseInt(r.substring(13,17),2); b31 = Integer.parseInt((r.substring(12,13)+r.substring(17,18)),2);
-        b4 = Integer.parseInt(r.substring(19,23),2); b41 = Integer.parseInt((r.substring(18,19)+r.substring(23,24)),2);
-        b5 = Integer.parseInt(r.substring(25,29),2); b51= Integer.parseInt((r.substring(24,25)+r.substring(29,30)),2);
-        b6 = Integer.parseInt(r.substring(31,35),2); b61= Integer.parseInt((r.substring(32,33)+r.substring(35,36)),2);
-        b7 = Integer.parseInt(r.substring(37,41),2); b71= Integer.parseInt((r.substring(36,37)+r.substring(41,42)),2);
-        b8 = Integer.parseInt(r.substring(43,47),2); b81 = Integer.parseInt((r.substring(42,43)+r.substring(47)),2);
+        b1 = Integer.parseInt(r.substring(1,5),2); b11 = 
+
+Integer.parseInt((r.substring(0,1)+r.substring(5,6)),2);
+        b2 = Integer.parseInt(r.substring(7,11),2); b21 = 
+
+Integer.parseInt((r.substring(6,7)+r.substring(11,12)),2);
+        b3 = Integer.parseInt(r.substring(13,17),2); b31 = 
+
+Integer.parseInt((r.substring(12,13)+r.substring(17,18)),2);
+        b4 = Integer.parseInt(r.substring(19,23),2); b41 = 
+
+Integer.parseInt((r.substring(18,19)+r.substring(23,24)),2);
+        b5 = Integer.parseInt(r.substring(25,29),2); b51= 
+
+Integer.parseInt((r.substring(24,25)+r.substring(29,30)),2);
+        b6 = Integer.parseInt(r.substring(31,35),2); b61= 
+
+Integer.parseInt((r.substring(32,33)+r.substring(35,36)),2);
+        b7 = Integer.parseInt(r.substring(37,41),2); b71= 
+
+Integer.parseInt((r.substring(36,37)+r.substring(41,42)),2);
+        b8 = Integer.parseInt(r.substring(43,47),2); b81 = 
+
+Integer.parseInt((r.substring(42,43)+r.substring(47)),2);
 
         r=""; //reset
 
@@ -420,7 +450,7 @@ public class DES {
         inputForm.tOutput.setText("");
         inputForm.tOutput.append("Encrypting\n");
         inputForm.tOutput.append("Input: " + input+ "\n");
-        inputForm.tOutput.append("Key:   " + key+ "\n");
+        inputForm.tOutput.append("Key: " + key+ "\n");
         setKeys(inputForm);
         setData(inputForm);
 
@@ -433,7 +463,8 @@ public class DES {
         inputForm.tOutput.setText("");
         inputForm.tOutput.append("Decrypting\n");
         inputForm.tOutput.append("Input: " + input+ "\n");
-        inputForm.tOutput.append("Key:   " + key+ "\n");
+        inputForm.tOutput.append("Key: " + key+ "\n");
+        setKeys(inputForm);
     }
 
 }
